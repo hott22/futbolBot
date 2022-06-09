@@ -6,6 +6,7 @@ app = ApplicationBuilder().token(TOKEN).build()
 filter_text = ['+', '-', '+1', '-1']
 
 app.add_handler(CommandHandler("help", help_command))
+
 app.add_handler(MessageHandler(filters.Text(filter_text), callback=run))
 app.add_handler(MessageHandler(filters.TEXT, callback=log))
 
