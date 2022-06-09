@@ -1,11 +1,13 @@
 from telegram import Update
 from telegram.ext import ContextTypes
 from datetime import datetime
+from mix import *
 
-user_id = [867705312, 2063531206, 746144832, 5157599418, 419834517, 180316194, 750423179, 243892031, 532113134]
+user_id = [867705312, 2063531206, 746144832, 5157599418, 419834517, 180316194, 750423179, 243892031, 532113134,
+           375690499, 778600419, 410604681,1738943375, 1082579902, 391366043]
 print(f'Длина списка ID {len(user_id)}')
 replace_first_name = ['Айрат', 'Серега', 'Руслан Батя', 'Ильгиз', 'Алешенька', 'Руслан Белый', 'Азат', 'Леха Месси',
-                      'Старпер']
+                      'Старпер', 'Даниил', 'Тимур', 'Владик', 'Андрэ', 'Володя', 'Альмир']
 print(f'Длинга списка имен: {len(replace_first_name)}')
 
 my_list = []
@@ -28,12 +30,37 @@ async def log(update: Update, context: ContextTypes):
 def create_message(data, limit_player, number):
     message = ''
     rezerv = ''
+    message_random_data_01 = ''
+    message_random_data_02 = ''
     if len(data) == 0:
         return 'Пока что список пуст'
     elif len(data) <= limit_player:
-        for i in range(len(data)):
-            message += f'{i + 1}.  {data[i]}\n'
-        return message
+        if len(data) < limit_player:
+            for i in range(len(data)):
+                message += f'{i + 1}.  {data[i]}\n'
+            return message
+        elif len(data) == limit_player:
+            for i in range(len(data)):
+                message += f'{i + 1}.  {data[i]}\n'
+            random_data = mix_list(data)
+
+            len_random_data = len(random_data) // 2
+            for i in range(len_random_data):
+                message_random_data_01 += f'{i + 1}.  {random_data[i * 2]}\n'
+            for i in range(len_random_data):
+                message_random_data_02 += f'{i + 1}.  {random_data[i * 2 + 1]}\n'
+
+            message_random_data = f'Набор:\n' \
+                                  f'{message}' \
+                                  f'\n' \
+                                  f'Рекомендую поделиться так:\n' \
+                                  f'\n' \
+                                  f'Синие:\n' \
+                                  f'{message_random_data_01}' \
+                                  f'\n' \
+                                  f'Рыжие:\n' \
+                                  f'{message_random_data_02}'
+            return message_random_data
     else:
         for i in range(limit_player):
             message += f'{i + 1}.  {data[i]}\n'
@@ -74,7 +101,7 @@ async def run(update: Update.message, context: ContextTypes):
             my_list.append(user_name)
             mess = create_message(my_list, 16, 0)
         else:
-            mess = 'Ты уже в списке'
+            mess = f'Ты уже в списке под именем {user_name}'
     elif update.message.text == '-':
         user_name = update.message.from_user.id
         for i in range(len(user_id)):
