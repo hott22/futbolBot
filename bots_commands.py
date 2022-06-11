@@ -2,13 +2,17 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from datetime import datetime
 from mix import *
-
+import random
 user_id = [867705312, 2063531206, 746144832, 5157599418, 419834517, 180316194, 750423179, 243892031, 532113134,
-           375690499, 778600419, 410604681,1738943375, 1082579902, 391366043]
-print(f'Длина списка ID {len(user_id)}')
+           375690499, 778600419, 410604681, 1738943375, 1082579902, 391366043, 367819844]
+
 replace_first_name = ['Айрат', 'Серега', 'Руслан Батя', 'Ильгиз', 'Алешенька', 'Руслан Белый', 'Азат', 'Леха Месси',
-                      'Старпер', 'Даниил', 'Тимур', 'Владик', 'Андрэ', 'Володя', 'Альмир']
-print(f'Длинга списка имен: {len(replace_first_name)}')
+                      'Я Рустем и я тоже хочу играть', 'Даниил', 'Тимур', 'Владик', 'Андрэ', 'Володя', 'Альмир', 'Дима']
+
+
+you_not_list = ['Чувак, тебя нет в списке!', 'Ошибка, тебя нет в списке', "Опс, сначала добавься, а потом уже удаляйся",
+                'Тебя нет', 'Тебя нет, но ты можешь добавиться' ]
+you_in_list = ["Ты уже в списке под именем: ", 'Эээ, меня не проведешь, я тебя знаю, ты -  ']
 
 my_list = []
 dt = datetime.now().hour
@@ -94,30 +98,37 @@ async def run(update: Update.message, context: ContextTypes):
 
     if update.message.text == '+':
         user_name = update.message.from_user.id
+
         for i in range(len(user_id)):
             if user_name == user_id[i]:
                 user_name = replace_first_name[i]
+        if type(user_name) == int:
+            user_name = update.message.from_user.first_name
         if user_name not in my_list:
             my_list.append(user_name)
             mess = create_message(my_list, 16, 0)
         else:
-            mess = f'Ты уже в списке под именем {user_name}'
+            mess = f'{you_in_list[random.randint(0,len(you_in_list) - 1)]}{user_name}'
     elif update.message.text == '-':
         user_name = update.message.from_user.id
         for i in range(len(user_id)):
             if user_name == user_id[i]:
                 user_name = replace_first_name[i]
+        if type(user_name) == int:
+            user_name = update.message.from_user.first_name
         if user_name in my_list:
             my_list.remove(user_name)
             mess = create_message(my_list, 16, 0)
         else:
-            mess = 'Тебя итак нет в списке'
+            mess = f'{you_not_list[random.randint(0, len(you_not_list) - 1)]}'
     elif update.message.text == '+1':
         if dt >= limit_hour:
             user_name = update.message.from_user.id
             for i in range(len(user_id)):
                 if user_name == user_id[i]:
                     user_name = replace_first_name[i]
+            if type(user_name) == int:
+                user_name = update.message.from_user.first_name
             user_plus_1 = f'+1 от {user_name}'
             my_list.append(user_plus_1)
             mess = create_message(my_list, 16, 1)
@@ -126,9 +137,12 @@ async def run(update: Update.message, context: ContextTypes):
             mess = f'Добавить игрока можно после {limit_hour} часов'
     elif update.message.text == '-1':
         user_name = update.message.from_user.id
+
         for i in range(len(user_id)):
             if user_name == user_id[i]:
                 user_name = replace_first_name[i]
+        if type(user_name) == int:
+            user_name = update.message.from_user.first_name
         user_plus_1 = f'+1 от {user_name}'
         if user_plus_1 in my_list:
             my_list.remove(user_plus_1)
@@ -143,4 +157,11 @@ async def help_command(update: Update.message, context: ContextTypes):
     await update.message.reply_text(f"Добавиться в список: отправь ' + ' \n"
                                     f"Удалиться из списка: отправь ' - ' \n"
                                     f"Добавить одного игрока в список: отправь ' +1 ' \n"
-                                    f"Удалить одного игрока из списка: отправь ' -1 '", quote=True)
+                                    f"Удалить одного игрока из списка: отправь ' -1 '\n"
+                                    f"/del - обнулить список", quote=True)
+
+
+async def del_command(update: Update.message, context: ContextTypes):
+    global my_list
+    my_list = []
+    await update.message.reply_text(f"Список обнулен", quote=True)
