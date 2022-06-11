@@ -11,12 +11,31 @@ replace_first_name = ['Айрат', 'Серега', 'Руслан Батя', 'И
 
 
 you_not_list = ['Чувак, тебя нет в списке!', 'Ошибка, тебя нет в списке', "Опс, сначала добавься, а потом уже удаляйся",
-                'Тебя нет', 'Тебя нет, но ты можешь добавиться' ]
+                'Тебя нет', 'Тебя нет, но ты можешь добавиться', 'Кинули дважды , совести нет совсем…' ]
 you_in_list = ["Ты уже в списке под именем: ", 'Эээ, меня не проведешь, я тебя знаю, ты -  ']
+
+you_add_in_list = ['Могучее ТЕЛО добавлено!', 'Красава!', 'Так деражать!', 'Без тебя бы было не интересно!:-)',
+                   'Я знал, что ты придешь!','Ура, товарищи!!!','Счастливый, футбол поиграешь сегодня!','Я тебя обожаю!',
+                   'Счастливчик )...жаль я не умею играть (((','Учти, с тебя минимум дубль сегодня!','Что ж, ты в игре!',
+                   'Давай только без твоих выкрутасов в стиле Месси! окей?','Почитай сначала правила игры, а потом приходи!',
+                   'На тебя поступила жалоба, что ты довольно часто забиваешь в свои ворота!','Ты сегодня в защите!',
+                   'Ты добавлен, но будь добр, приходи трезвым!','Пузико решил растрясти?)',' Так, смотри кто к нам пришел!',
+                   'Сразу предупреждаю, у нас пеший футбол, тоесть пузико не исчезнет']
+
+you_del_in_list = ['Бля, я так и знал что ты это сделаешь!!!','Пацаны, нас кинули!','Бейте его!!!','Ты куда? ёмаё!',
+                   'Даю тебе последний шанс вернуться!','Ну и съёбывай от сюда!','И как тебя назвать после этого?',
+                   '...No comments...','Ты совершил ошибку!!',"Перепутал '+' c '-' ?",'Пиздец конечно...']
+
+you_add_friend_in_list = ['Могучее ТЕЛО добавлено!', 'Он точно придёт?', 'Если он не приедет, платишь за него тоже!',
+                          'Если он НЕ придет - отрабатываешь за двоих, учти!!!','Это кто? Надеюсь Рональдиньо?',
+                          'Неужели это Дзюба?','Он умеет играть?','Проинструктируй его, что у нас тут пеший футбол!',
+                          'Пусть приходит!','Недеюсь он не хоккеист?','О, круто, оценим чувака!',
+                          'Недеюсь это защитник? Нападающих тут и так дохуя!',
+                          'Если это нападающий, то ему тут делать нехуй, конкуренция страшная!']
 
 my_list = []
 dt = datetime.now().hour
-limit_hour = 12
+limit_hour = 2
 
 
 def log_name(update: Update, context: ContextTypes):
@@ -37,7 +56,7 @@ def create_message(data, limit_player, number):
     message_random_data_01 = ''
     message_random_data_02 = ''
     if len(data) == 0:
-        return 'Пока что список пуст'
+        return 'Ау, люди вы где?'
     elif len(data) <= limit_player:
         if len(data) < limit_player:
             for i in range(len(data)):
@@ -106,7 +125,10 @@ async def run(update: Update.message, context: ContextTypes):
             user_name = update.message.from_user.first_name
         if user_name not in my_list:
             my_list.append(user_name)
-            mess = create_message(my_list, 16, 0)
+
+            mess = f'{you_add_in_list[random.randint(0,len(you_add_in_list) - 1)]}\n' \
+                   f'\n' \
+                   f'{create_message(my_list, 16, 0)}'
         else:
             mess = f'{you_in_list[random.randint(0,len(you_in_list) - 1)]}{user_name}'
     elif update.message.text == '-':
@@ -118,7 +140,9 @@ async def run(update: Update.message, context: ContextTypes):
             user_name = update.message.from_user.first_name
         if user_name in my_list:
             my_list.remove(user_name)
-            mess = create_message(my_list, 16, 0)
+            mess = f'{you_del_in_list[random.randint(0,len(you_del_in_list) - 1)]}\n' \
+                   f'\n' \
+                   f'{create_message(my_list, 16, 0)}'
         else:
             mess = f'{you_not_list[random.randint(0, len(you_not_list) - 1)]}'
     elif update.message.text == '+1':
@@ -131,7 +155,9 @@ async def run(update: Update.message, context: ContextTypes):
                 user_name = update.message.from_user.first_name
             user_plus_1 = f'+1 от {user_name}'
             my_list.append(user_plus_1)
-            mess = create_message(my_list, 16, 1)
+            mess = f'{you_add_friend_in_list[random.randint(0, len(you_add_friend_in_list) - 1)]}\n' \
+                   f'\n' \
+                   f'{create_message(my_list, 16, 1)}'
 
         else:
             mess = f'Добавить игрока можно после {limit_hour} часов'
@@ -164,4 +190,4 @@ async def help_command(update: Update.message, context: ContextTypes):
 async def del_command(update: Update.message, context: ContextTypes):
     global my_list
     my_list = []
-    await update.message.reply_text(f"Список обнулен", quote=True)
+    await update.message.reply_text(f"Эээ, список кто-то ёбнул", quote=True)
