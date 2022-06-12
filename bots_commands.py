@@ -1,14 +1,15 @@
 from telegram import Update
-from telegram.ext import ContextTypes
+from telegram.ext import ContextTypes, CallbackContext
 from datetime import datetime
 from mix import *
 import random
 
 user_id = [867705312, 2063531206, 746144832, 5157599418, 419834517, 180316194, 750423179, 243892031, 532113134,
-           375690499, 778600419, 410604681, 1738943375, 1082579902, 391366043, 367819844]
+           375690499, 778600419, 410604681, 1738943375, 1082579902, 391366043, 367819844, 441989210]
 
 replace_first_name = ['Айрат', 'Серега', 'Руслан Батя', 'Ильгиз', 'Алешенька', 'Руслан Белый', 'Азат', 'Леха Месси',
-                      'Я Рустем и я тоже хочу играть', 'Даниил', 'Тимур', 'Владик', 'Андрэ', 'Володя', 'Альмир', 'Дима']
+                      'Я Рустем и я тоже хочу играть', 'Даниил', 'Тимур', 'Владик', 'Андрэ', 'Володя', 'Альмир', 'Дима',
+                      'Макс']
 
 you_not_list = ['Чувак, тебя нет в списке!', 'Ошибка, тебя нет в списке', "Опс, сначала добавься, а потом уже удаляйся",
                 'Тебя нет', 'Тебя нет, но ты можешь добавиться', 'Кинули дважды , совести нет совсем…']
@@ -44,14 +45,16 @@ you_del_friend_in_list = ['Бля, я так и знал что ты это сд
 
 my_list = []
 dt = datetime.now().hour
-limit_hour = 2
+limit_hour = 12
 
 
 def log_name(update: Update, context: ContextTypes):
     file = open('log.csv', 'a')
     file.write(f'{update.message.from_user.id}, '
                f'{update.message.from_user.first_name}, '
-               f'{update.message.text}\n')
+               f'{update.message.text}, '
+               f'{update.message.date}, '
+               f'{update.message.chat.id}\n')
     file.close()
 
 
@@ -132,10 +135,8 @@ def create_message(data, limit_player, number):
 async def run(update: Update.message, context: ContextTypes):
     log_name(update, context)
     mess = ''
-
+    user_name = update.message.from_user.id
     if update.message.text == '+':
-        user_name = update.message.from_user.id
-
         for i in range(len(user_id)):
             if user_name == user_id[i]:
                 user_name = replace_first_name[i]
@@ -144,13 +145,12 @@ async def run(update: Update.message, context: ContextTypes):
         if user_name not in my_list:
             my_list.append(user_name)
 
-            mess = f'{you_add_in_list[random.randint(0, len(you_add_in_list) - 1)]}\n' \
+            mess = f'*{you_add_in_list[random.randint(0, len(you_add_in_list) - 1)]}*\n' \
                    f'\n' \
                    f'{create_message(my_list, 16, 0)}'
         else:
-            mess = f'{you_in_list[random.randint(0, len(you_in_list) - 1)]}{user_name}'
+            mess = f'*{you_in_list[random.randint(0, len(you_in_list) - 1)]}{user_name}*'
     elif update.message.text == '-':
-        user_name = update.message.from_user.id
         for i in range(len(user_id)):
             if user_name == user_id[i]:
                 user_name = replace_first_name[i]
@@ -158,14 +158,13 @@ async def run(update: Update.message, context: ContextTypes):
             user_name = update.message.from_user.first_name
         if user_name in my_list:
             my_list.remove(user_name)
-            mess = f'{you_del_in_list[random.randint(0, len(you_del_in_list) - 1)]}\n' \
+            mess = f'*{you_del_in_list[random.randint(0, len(you_del_in_list) - 1)]}*\n' \
                    f'\n' \
                    f'{create_message(my_list, 16, 2)}'
         else:
-            mess = f'{you_not_list[random.randint(0, len(you_not_list) - 1)]}'
+            mess = f'*{you_not_list[random.randint(0, len(you_not_list) - 1)]}*'
     elif update.message.text == '+1':
         if dt >= limit_hour:
-            user_name = update.message.from_user.id
             for i in range(len(user_id)):
                 if user_name == user_id[i]:
                     user_name = replace_first_name[i]
@@ -173,15 +172,13 @@ async def run(update: Update.message, context: ContextTypes):
                 user_name = update.message.from_user.first_name
             user_plus_1 = f'+1 от {user_name}'
             my_list.append(user_plus_1)
-            mess = f'{you_add_friend_in_list[random.randint(0, len(you_add_friend_in_list) - 1)]}\n' \
+            mess = f'*{you_add_friend_in_list[random.randint(0, len(you_add_friend_in_list) - 1)]}*\n' \
                    f'\n' \
                    f'{create_message(my_list, 16, 1)}'
 
         else:
-            mess = f'Добавить игрока можно после {limit_hour} часов'
+            mess = f'*Добавить игрока можно после {limit_hour} часов*'
     elif update.message.text == '-1':
-        user_name = update.message.from_user.id
-
         for i in range(len(user_id)):
             if user_name == user_id[i]:
                 user_name = replace_first_name[i]
@@ -190,13 +187,13 @@ async def run(update: Update.message, context: ContextTypes):
         user_plus_1 = f'+1 от {user_name}'
         if user_plus_1 in my_list:
             my_list.remove(user_plus_1)
-            mess = f'{you_del_friend_in_list[random.randint(0, len(you_del_friend_in_list) - 1)]}\n' \
+            mess = f'*{you_del_friend_in_list[random.randint(0, len(you_del_friend_in_list) - 1)]}*\n' \
                    f'\n' \
                    f'{create_message(my_list, 16, 2)}'
         else:
-            mess = 'Твоего игрока нет в списке'
+            mess = '*Твоего игрока нет в списке*'
 
-    await update.message.reply_text(f'{mess}', quote=True)
+    await update.message.reply_text(f'{mess}', quote=True, parse_mode='Markdown')
 
 
 async def help_command(update: Update.message, context: ContextTypes):
@@ -211,3 +208,8 @@ async def del_command(update: Update.message, context: ContextTypes):
     global my_list
     my_list = []
     await update.message.reply_text(f"Эээ, список кто-то ёбнул", quote=True)
+
+async def tela_tela(context: CallbackContext):
+    global my_list
+    if dt >= 16 and len(my_list) < 15:
+        await context.bot.send_message(chat_id=-1001781416351, text='Тела, тела, тела, тела, тела, тела....')
