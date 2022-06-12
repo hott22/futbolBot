@@ -44,7 +44,7 @@ you_del_friend_in_list = ['Бля, я так и знал что ты это сд
                           'Скажи ему, что тут ребята огорчились!','То добавляешь, то удаляешь, давай посерьезнее?']
 
 my_list = []
-dt = datetime.now().hour
+
 limit_hour = 12
 
 
@@ -133,7 +133,9 @@ def create_message(data, limit_player, number):
 
 
 async def run(update: Update.message, context: ContextTypes):
+
     log_name(update, context)
+    dt = datetime.now().hour
     mess = ''
     user_name = update.message.from_user.id
     if update.message.text == '+':
@@ -164,6 +166,8 @@ async def run(update: Update.message, context: ContextTypes):
         else:
             mess = f'*{you_not_list[random.randint(0, len(you_not_list) - 1)]}*'
     elif update.message.text == '+1':
+        print(dt)
+        print(limit_hour)
         if dt >= limit_hour:
             for i in range(len(user_id)):
                 if user_name == user_id[i]:
@@ -209,7 +213,26 @@ async def del_command(update: Update.message, context: ContextTypes):
     my_list = []
     await update.message.reply_text(f"Эээ, список кто-то ёбнул", quote=True)
 
+
 async def tela_tela(context: CallbackContext):
     global my_list
-    if dt >= 16 and len(my_list) < 15:
-        await context.bot.send_message(chat_id=-1001781416351, text='Тела, тела, тела, тела, тела, тела....')
+    if len(my_list) < 15:
+        await context.bot.send_message(chat_id=-1001781416351, text='*Тела, тела, тела, тела, тела, тела....*',
+                                       parse_mode='Markdown')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
