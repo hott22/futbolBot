@@ -108,16 +108,25 @@ def create_message(data, limit_player, number):
                           f'\n' \
                           f'Основной список:\n' \
                           f'{message}'
-        else:
-            new_message = f'Твой(и) игрок(и) в резерве!\n' \
+            return new_message
+        elif number == 1:
+            new_message = f'Твой игрок в резерве!\n' \
                           f'\n' \
                           f'Резерв!\n' \
                           f'{rezerv}' \
                           f'\n' \
                           f'Основной список:\n' \
                           f'{message}'
+            return new_message
+        elif number == 2:
+            new_message =   f'Резерв!\n' \
+                            f'{rezerv}' \
+                            f'\n' \
+                            f'Основной список:\n' \
+                            f'{message}'
 
-        return new_message
+
+            return new_message
 
 
 async def run(update: Update.message, context: ContextTypes):
@@ -151,7 +160,7 @@ async def run(update: Update.message, context: ContextTypes):
             my_list.remove(user_name)
             mess = f'{you_del_in_list[random.randint(0, len(you_del_in_list) - 1)]}\n' \
                    f'\n' \
-                   f'{create_message(my_list, 16, 0)}'
+                   f'{create_message(my_list, 16, 2)}'
         else:
             mess = f'{you_not_list[random.randint(0, len(you_not_list) - 1)]}'
     elif update.message.text == '+1':
@@ -183,7 +192,7 @@ async def run(update: Update.message, context: ContextTypes):
             my_list.remove(user_plus_1)
             mess = f'{you_del_friend_in_list[random.randint(0, len(you_del_friend_in_list) - 1)]}\n' \
                    f'\n' \
-                   f'{create_message(my_list, 16, 1)}'
+                   f'{create_message(my_list, 16, 2)}'
         else:
             mess = 'Твоего игрока нет в списке'
 
